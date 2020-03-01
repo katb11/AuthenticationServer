@@ -17,12 +17,13 @@ public class AuthenticationEndpoint extends HttpServlet {
         /* for traditional login */
         String email = request.getParameter("email");
         String password = request.getParameter("password");
+        String hashedPassword = Hash.getHash(password);
 
         User user = null;
         try {
             // traditional login
-            if (email != null && password != null) {
-                user = UserDao.fetchUser(email, password);
+            if (email != null && hashedPassword != null) {
+                user = UserDao.fetchUser(email, hashedPassword);
             }
 
             response.setContentType("application/json");
@@ -41,9 +42,5 @@ public class AuthenticationEndpoint extends HttpServlet {
         } catch (Exception e) {
             response.getWriter().write("unexpected server error");
         }
-    }
-
-    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        response.getWriter().write((Hash.getHash("testing1!").toString()));
     }
 }

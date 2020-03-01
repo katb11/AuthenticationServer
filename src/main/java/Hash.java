@@ -2,18 +2,21 @@ import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
+import java.util.Base64;
 
 public class Hash {
 
     private static final String salt = System.getenv("SALT");
 
-    public static byte[] getHash(String value) {
+    public static String getHash(String value) {
         MessageDigest md;
         try {
-            md = MessageDigest.getInstance("SHA-512");
-            md.update(salt.getBytes());
+            md = MessageDigest.getInstance("SHA-256");
+            byte[] saltArray = Base64.getDecoder().decode(salt);
+            md.update(saltArray);
 
-            return md.digest(value.getBytes(StandardCharsets.UTF_8));
+            byte[] byteArray = md.digest(value.getBytes(StandardCharsets.UTF_8));
+            return Base64.getEncoder().encodeToString(byteArray);
         } catch (NoSuchAlgorithmException e) {
             e.printStackTrace();
             return null;
@@ -28,6 +31,6 @@ public class Hash {
         byte[] salt = new byte[16];
         random.nextBytes(salt);
 
-        return salt.toString();
+        return Base64.getEncoder().encodeToString(salt);
     }
 }
