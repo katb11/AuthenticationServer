@@ -1,12 +1,32 @@
+package service;
+
+import javax.crypto.Cipher;
+import javax.crypto.spec.SecretKeySpec;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.util.Base64;
 
-public class Hash {
+public class CryptoUtil {
 
     private static final String salt = System.getenv("SALT");
+    private static final String secretKey = System.getenv("SECRET_KEY");
+
+    public static byte[] decrypt(byte[] encryptedText) {
+        String data = null;
+
+        try {
+            SecretKeySpec keySpec = new SecretKeySpec(secretKey.getBytes(),"AES");
+            Cipher cipher = Cipher.getInstance("AES");
+            cipher.init(Cipher.DECRYPT_MODE, keySpec);
+            return cipher.doFinal(encryptedText);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
 
     public static String getHash(String value) {
         MessageDigest md;
